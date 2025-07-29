@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  marketmaker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lighter-mm
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./configs:/app/configs:ro
+      - ./logs:/app/logs
+    ports:
+      - "9090:9090"  # Prometheus metrics
+    networks:
+      - marketmaker-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9091:9090"
+    networks:
+      - marketmaker-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    networks:
+      - marketmaker-net
+    depends_on:
+      - prometheus
+
+networks:
+  marketmaker-net:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

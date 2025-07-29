@@ -1,0 +1,41 @@
+{
+  "lighter": {
+    "baseURL": "https://mainnet.zklighter.elliot.ai",
+    "wsURL": "wss://mainnet.zklighter.elliot.ai/ws",
+    "apiKeyPrivateKey": "0x...",
+    "accountIndex": 0,
+    "apiKeyIndex": 2
+  },
+  "markets": [
+    {
+      "symbol": "ETH-USDC",
+      "baseDecimals": 18,
+      "quoteDecimals": 6,
+      "minOrderSize": "0.01",
+      "tickSize": "0.01",
+      "minSpreadBps": 10,
+      "maxSpreadBps": 100,
+      "orderLevels": 3,
+      "maxPosition": "10.0",
+      "orderSizeMultiplier": 1.5,
+      "skewFactor": 0.3
+    }
+  ],
+  "risk": {
+    "maxTotalPositionUSD": 100000,
+    "maxOrderValueUSD": 10000,
+    "dailyLossLimitUSD": 1000,
+    "positionCheckIntervalMs": 100
+  },
+  "performance": {
+    "metricsPort": 9090,
+    "updateIntervalMs": 100,
+    "orderPoolSize": 1000,
+    "websocketBufferSize": 10000
+  },
+  "logging": {
+    "level": "info",
+    "outputPath": "stdout",
+    "errorOutputPath": "stderr"
+  }
+}
